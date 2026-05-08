@@ -1,12 +1,81 @@
-type Props = {
-  params: { id: string };
-};
+'use client';
 
-export default function RegisterPage({ params }: Props) {
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (!res.ok) {
+      setMessage(data.message || '註冊失敗');
+      return;
+    }
+
+    router.push('/login');
+  };
+
   return (
-    <main className="container section">
-      <h1>註冊頁面</h1>
-      <p className="muted">這裡之後會放註冊表單、驗證等功能。</p>
+    <main className="container section" style={{ maxWidth: 560 }}>
+      <h1>註冊</h1>
+      <p className="muted">建立會員帳號，之後可登入查看訂單與會員資料。</p>
+
+      <form className="card" style={{ padding: 24, marginTop: 20 }} onSubmit={submit}>
+        <Field label="姓名" placeholder="請輸入姓名" value={name} onChange={setName} />
+        <Field label="Email" placeholder="name@example.com" value={email} onChange={setEmail} />
+        <Field label="密碼" placeholder="請輸入密碼" type="password" value={password} onChange={setPassword} />
+
+        {message ? <p style={{ color: '#fca5a5', marginTop: 12 }}>{message}</p> : null}
+
+        <button type="submit" className="btn" style={{ marginTop: 20, width: '100%' }} disabled={loading}>
+          {loading ? '註冊中...' : '建立帳號'}
+        </button>
+      </form>
     </main>
+  );
+}
+
+function Field({
+  label,
+  placeholder,
+  type = 'text',
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  type?: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label style={{ display: 'block', marginTop: 16 }}>
+      <span className="muted">{label}</span>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ width: '100%', marginTop: 8, padding: 12, borderRadius: 12, background: '#111', color: '#fff', border: '1px solid #262626' }}
+      />
+    </label>
   );
 }
