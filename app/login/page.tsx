@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStatus } from '@/components/AuthStatus';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuthStatus();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -28,6 +30,9 @@ export default function LoginPage() {
       setMessage(data.message || '登入失敗');
       return;
     }
+
+    // 直接把 user 塞進 context，Navbar 立刻更新
+    setUser(data.user);
 
     router.push('/member');
     router.refresh();
@@ -73,7 +78,15 @@ function Field({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        style={{ width: '100%', marginTop: 8, padding: 12, borderRadius: 12, background: '#111', color: '#fff', border: '1px solid #262626' }}
+        style={{
+          width: '100%',
+          marginTop: 8,
+          padding: 12,
+          borderRadius: 12,
+          background: '#111',
+          color: '#fff',
+          border: '1px solid #262626',
+        }}
       />
     </label>
   );
