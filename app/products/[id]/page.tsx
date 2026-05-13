@@ -1,27 +1,49 @@
-type Props = {
-  params: { id: string };
-};
+import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
 
-export default function ProductDetailPage({ params }: Props) {
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (!product || !product.isActive) notFound();
+
   return (
-    <main className="container section">
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start', gap: 32 }}>
-        <div className="card" style={{ minHeight: 520, background: '#1a1a1a' }} />
+    <main className="container section" style={{ maxWidth: 800 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
+        <div style={{ aspectRatio: '1 / 1', background: '#f1f1f1', borderRadius: 18 }} />
+
         <div>
-          <p className="muted">商品 ID：{params.id}</p>
-          <h1 style={{ marginTop: 8 }}>商品名稱 {params.id}</h1>
-          <p className="muted" style={{ lineHeight: 1.8 }}>
-            這裡之後會放商品描述、規格、庫存、價格與加入購物車按鈕。正式案通常還會加圖片輪播、配送方式、評價區塊與推薦商品。
+          <span style={{ fontSize: 12, color: '#ec4899', fontWeight: 700 }}>
+            {product.tag ?? product.category}
+          </span>
+          <h1 style={{ margin: '10px 0 12px', fontSize: 28 }}>{product.name}</h1>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#111', margin: '0 0 16px' }}>
+            NT$ {product.price.toLocaleString()}
+          </p>
+          <p style={{ color: '#555', lineHeight: 1.8, marginBottom: 24 }}>{product.description}</p>
+          <p style={{ fontSize: 13, color: '#999', marginBottom: 24 }}>
+            庫存：{product.stock > 0 ? `${product.stock} 件` : '已售完'}
           </p>
 
-          <div style={{ margin: '24px 0', fontSize: 24, fontWeight: 800 }}>
-            NT$ 1,280
-          </div>
-
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button className="btn">加入購物車</button>
-            <button className="btn" style={{ background: 'transparent' }}>立即購買</button>
-          </div>
+          <button
+            disabled={product.stock === 0}
+            style={{
+              width: '100%',
+              padding: '14px',
+              borderRadius: 999,
+              background: product.stock > 0 ? '#ec4899' : '#ccc',
+              color: '#fff',
+              border: 'none',
+              fontWeight: 700,
+              fontSize: 16,
+              cursor: product.stock > 0 ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {product.stock > 0 ? '加入購物車' : '已售完'}
+          </button>
         </div>
       </div>
     </main>
