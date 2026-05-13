@@ -1,30 +1,37 @@
 import Link from 'next/link';
-import AuthStatus from './AuthStatus';
-import SearchBox from './SearchBox';
-
-const categories = ['居家生活', '3C 電子', '服飾鞋包', '美妝保養', '母嬰玩具', '食品飲料'];
 
 export default function Navbar() {
+  const categories = ['居家生活', '3C 電子', '服飾鞋包', '美妝保養', '母嬰玩具', '食品飲料'];
+
   return (
-    <header style={{ background: '#fff', borderBottom: '1px solid #e5e5e5', color: '#111' }}>
-      <div className="container" style={{ padding: '14px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-          <Link href="/" style={{ fontSize: 28, fontWeight: 800, color: '#ec4899', flexShrink: 0 }}>
-            Basil Mall
+    <header className="site-header">
+      <div className="container">
+        <div className="site-header-inner">
+          <Link href="/" className="brand" aria-label="Basil Mall">
+            <span className="brand-mark" />
+            <span>Basil Mall</span>
           </Link>
-          <SearchBox />
-          <nav style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', fontSize: 14, flexShrink: 0 }}>
-            <AuthStatus />
-          </nav>
+
+          <form action="/products" className="searchbar">
+            <input name="q" placeholder="搜尋商品、品牌或關鍵字" />
+            <button type="submit">搜尋</button>
+          </form>
+
+          <div className="header-actions">
+            <Link href="/member">會員中心</Link>
+            <Link href="/orders">訂單</Link>
+            <Link href="/cart">購物車</Link>
+            <Link href="/login">登入</Link>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 14, fontSize: 14 }}>
+        <nav className="top-categories" aria-label="商品分類">
           {categories.map((item) => (
-            <Link key={item} href="/categories" style={{ color: '#333' }}>
+            <Link key={item} href={`/products?category=${encodeURIComponent(item)}`}>
               {item}
             </Link>
           ))}
-        </div>
+        </nav>
       </div>
     </header>
   );

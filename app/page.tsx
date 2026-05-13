@@ -1,136 +1,95 @@
 import Link from 'next/link';
-import GuestBanner from '@/components/GuestBanner';
+import { prisma } from '@/lib/prisma';
+import ProductImage from '@/components/ProductImage';
 
 const categories = [
-  { title: '母親節送禮', desc: '熱門禮物與限定組合', color: '#4f46e5' },
-  { title: '家電 3C', desc: '耳機、鍵盤、行動電源', color: '#ec4899' },
-  { title: '生活用品', desc: '居家、收納、日用品', color: '#10b981' },
-  { title: '美妝保養', desc: '保養品、面膜、彩妝', color: '#f59e0b' },
-  { title: '服飾鞋包', desc: '男女裝、鞋款、包包', color: '#ef4444' },
-  { title: '食品飲料', desc: '零食、咖啡、飲品', color: '#06b6d4' },
+  { name: '居家生活', desc: '收納、杯瓶、日用品', color: '#55ae7c' },
+  { name: '3C 電子', desc: '耳機、鍵盤、充電配件', color: '#cb5b9b' },
+  { name: '服飾鞋包', desc: '男女裝、鞋款、包袋', color: '#d65454' },
+  { name: '美妝保養', desc: '面膜、保養、彩妝', color: '#e1a13a' },
+  { name: '母嬰玩具', desc: '育兒用品與玩具', color: '#6d5ef6' },
+  { name: '食品飲料', desc: '零食、咖啡、飲品', color: '#57a8c5' },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: 'desc' },
+    take: 8,
+  });
+
   return (
-    <main style={{ background: '#f6f6f6', color: '#111' }}>
-      <section className="container" style={{ paddingTop: 24 }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 1.1fr',
-            gap: 16,
-          }}
-        >
-          <div
-            style={{
-              minHeight: 380,
-              borderRadius: 18,
-              overflow: 'hidden',
-              background: 'linear-gradient(135deg, #ec4899, #fbbf24)',
-              position: 'relative',
-              color: '#fff',
-              padding: 32,
-            }}
-          >
-            <p style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>今日精選</p>
-            <h1 style={{ marginTop: 10, marginBottom: 12, fontSize: 44, lineHeight: 1.1 }}>
-              母親節限定
-              <br />
-              超值組合
-            </h1>
-            <p style={{ maxWidth: 420, lineHeight: 1.7, marginBottom: 24 }}>
-              熱銷商品、限時折扣、品牌聯盟與主題活動，一次逛齊。
+    <main className="container section">
+      <section className="bento-grid">
+        <div className="bento-tile bento-hero">
+          <div>
+            <div className="eyebrow">今日精選 / Seasonal Drop</div>
+            <h1>更乾淨、更好逛的選物商城首頁</h1>
+            <p>
+              用 Bento Grid 重組首頁資訊層級，讓主活動、快速分類、品牌利益點與精選商品都更容易被看見。
             </p>
-            <Link className="btn" href="/products" style={{ background: '#fff', color: '#ec4899' }}>
-              立即逛逛
-            </Link>
-          </div>
-
-          <div style={{ display: 'grid', gap: 16 }}>
-            <div style={{ borderRadius: 18, background: '#111', color: '#fff', padding: 24, minHeight: 182 }}>
-              <p style={{ marginTop: 0, opacity: 0.7 }}>品牌聯盟</p>
-              <h2 style={{ marginBottom: 8 }}>最高回饋 $1200</h2>
-              <p style={{ opacity: 0.85 }}>指定品牌滿額折扣、滿額送好禮。</p>
-            </div>
-            <div style={{ borderRadius: 18, background: '#fff', padding: 24, minHeight: 182, border: '1px solid #e5e5e5' }}>
-              <p style={{ marginTop: 0, color: '#ec4899' }}>限時快閃</p>
-              <h2 style={{ marginBottom: 8 }}>今天下單，明天出貨</h2>
-              <p style={{ color: '#666' }}>精選熱銷商品與補貨新品。</p>
+            <div className="hero-actions">
+              <Link href="/products" className="btn">立即逛逛</Link>
+              <Link href="/products?category=居家生活" className="btn btn-secondary">生活選物</Link>
             </div>
           </div>
+
+          <div className="badge">每週更新新品 · 更好的 discovery 體驗</div>
         </div>
+
+        <div className="bento-tile bento-dark">
+          <div className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>
+            品牌回饋
+          </div>
+          <h3>會員最高折抵 $1200</h3>
+          <p>指定品牌聯盟與滿額優惠，放在首頁右上中卡很適合。</p>
+        </div>
+
+        <div className="bento-tile bento-light">
+          <div className="badge">快速出貨</div>
+          <h3>今天下單，明天出貨</h3>
+          <p>把服務承諾做成獨立資訊卡，首頁資訊會更清楚。</p>
+        </div>
+
+        {categories.map((item) => (
+          <Link
+            key={item.name}
+            href={`/products?category=${encodeURIComponent(item.name)}`}
+            className="bento-tile bento-category"
+          >
+            <div className="bento-category-icon" style={{ background: item.color }} />
+            <div>
+              <h3>{item.name}</h3>
+              <p>{item.desc}</p>
+            </div>
+          </Link>
+        ))}
       </section>
 
-      <section className="container" style={{ paddingTop: 28 }}>
-        <h2 style={{ color: '#111', marginBottom: 16 }}>快速分類</h2>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(6, 1fr)',
-            gap: 12,
-          }}
-        >
-          {categories.map((item) => (
-            <Link
-              key={item.title}
-              href="/categories"
-              style={{
-                background: '#fff',
-                borderRadius: 16,
-                padding: 18,
-                border: '1px solid #e5e5e5',
-                minHeight: 118,
-              }}
-            >
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: item.color, marginBottom: 12 }} />
-              <strong style={{ display: 'block', marginBottom: 6 }}>{item.title}</strong>
-              <span style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>{item.desc}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="container" style={{ paddingTop: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 16 }}>
-          <h2 style={{ color: '#111', margin: 0 }}>精選商品</h2>
-          <Link href="/products" style={{ color: '#ec4899' }}>看更多</Link>
+      <section>
+        <div className="section-row">
+          <h2>精選商品</h2>
+          <Link href="/products">查看更多</Link>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 16,
-            marginTop: 16,
-          }}
-        >
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{ background: '#fff', borderRadius: 18, padding: 16, border: '1px solid #e5e5e5' }}>
-              <div style={{ width: '100%', height: 160, background: '#f6f6f6', borderRadius: 12, marginBottom: 12 }} />
-              <strong style={{ display: 'block', marginBottom: 6 }}>商品名稱 {i}</strong>
-              <span style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>商品簡短描述，介紹商品特色與賣點。</span>
-              <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 16, fontWeight: 'bold', color: '#ef4444' }}>$1999</span>
-                <button
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: 999,
-                    background: '#ec4899',
-                    color: '#fff',
-                    border: 'none',
-                    fontWeight: 700,
-                  }}
-                >
-                  加入購物車
-                </button>
+        <div className="product-grid">
+          {products.map((p) => (
+            <Link key={p.id} href={`/products/${p.id}`} className="product-card">
+              <div className="product-media">
+                <ProductImage src={p.imageUrl} alt={p.name} />
               </div>
-            </div>
+
+              <div className="product-body">
+                {p.tag ? <span className="badge">{p.tag}</span> : null}
+                <h3 className="product-title">{p.name}</h3>
+                <p className="product-price">NT$ {p.price.toLocaleString()}</p>
+                <p className="product-sub">
+                  {p.category} · 庫存 {p.stock} 件
+                </p>
+              </div>
+            </Link>
           ))}
         </div>
-      </section>
-
-      <section className="container" style={{ paddingTop: 28, paddingBottom: 72 }}>
-        <GuestBanner />
       </section>
     </main>
   );

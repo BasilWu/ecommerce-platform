@@ -22,25 +22,43 @@ export default async function ProductsPage({
 
   return (
     <main className="container section">
-      <h1 style={{ marginBottom: 20 }}>商品列表</h1>
+      <div className="page-header">
+        <h1>探索商品</h1>
+        <p>
+          依分類快速瀏覽選物，也可以直接從搜尋結果找到想買的商品。
+        </p>
+      </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+      <div
+        className="card"
+        style={{
+          padding: 16,
+          borderRadius: 24,
+          marginBottom: 20,
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 10,
+        }}
+      >
         {categories.map((c) => {
           const active = category === c || (!category && c === '全部');
           const href = c === '全部' ? '/products' : `/products?category=${encodeURIComponent(c)}`;
+
           return (
             <Link
               key={c}
               href={href}
               style={{
-                padding: '8px 18px',
+                height: 38,
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 14px',
                 borderRadius: 999,
-                border: '1px solid #e5e5e5',
-                background: active ? '#ec4899' : '#fff',
-                color: active ? '#fff' : '#111',
+                border: active ? '1px solid #161616' : '1px solid #e6ddd2',
+                background: active ? '#161616' : '#fff',
+                color: active ? '#fff' : '#6c675f',
                 fontSize: 14,
-                fontWeight: 600,
-                textDecoration: 'none',
+                fontWeight: 700,
               }}
             >
               {c}
@@ -49,20 +67,52 @@ export default async function ProductsPage({
         })}
       </div>
 
+      <div className="section-row" style={{ marginTop: 0 }}>
+        <h2 style={{ fontSize: 18 }}>
+          {q ? `搜尋結果：${q}` : category && category !== '全部' ? category : '全部商品'}
+        </h2>
+        <span className="muted" style={{ fontSize: 14 }}>
+          共 {products.length} 件商品
+        </span>
+      </div>
+
       {products.length === 0 ? (
-        <p className="muted">找不到商品。</p>
+        <div className="card" style={{ padding: 28 }}>
+          <p className="muted" style={{ margin: 0 }}>
+            找不到符合條件的商品，試試其他分類或搜尋關鍵字。
+          </p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
+        <div className="product-grid">
           {products.map((p) => (
-            <Link key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ background: '#fff', borderRadius: 18, border: '1px solid #e5e5e5', overflow: 'hidden' }}>
+            <Link key={p.id} href={`/products/${p.id}`} className="product-card">
+              <div className="product-media">
                 <ProductImage src={p.imageUrl} alt={p.name} />
-                <div style={{ padding: 18 }}>
-                  {p.tag && <span style={{ fontSize: 12, color: '#ec4899', fontWeight: 700 }}>{p.tag}</span>}
-                  <h3 style={{ margin: '8px 0 6px', fontSize: 15, color: '#111' }}>{p.name}</h3>
-                  <p style={{ margin: 0, fontWeight: 700, color: '#111' }}>NT$ {p.price.toLocaleString()}</p>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#999' }}>庫存 {p.stock} 件</p>
+              </div>
+
+              <div className="product-body">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {p.tag ? <span className="badge">{p.tag}</span> : null}
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      height: 28,
+                      padding: '0 12px',
+                      borderRadius: 999,
+                      background: '#f5f0ea',
+                      color: '#6c675f',
+                      fontSize: 12,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {p.category}
+                  </span>
                 </div>
+
+                <h3 className="product-title">{p.name}</h3>
+                <p className="product-price">NT$ {p.price.toLocaleString()}</p>
+                <p className="product-sub">庫存 {p.stock} 件</p>
               </div>
             </Link>
           ))}
