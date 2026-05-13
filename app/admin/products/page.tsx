@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import ProductActions from './ProductActions';
+import ProductImage from '@/components/ProductImage';
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
@@ -40,7 +41,9 @@ export default async function AdminProductsPage() {
           <tbody>
             {products.map((p) => (
               <tr key={p.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <td style={{ padding: '14px 16px', fontWeight: 600 }}>{p.name}</td>
+                <td style={{ padding: '14px 16px', fontWeight: 600 }}>
+                  <ProductImage src={p.imageUrl} alt={p.name} />
+                </td>
                 <td style={{ padding: '14px 16px', color: '#666', fontSize: 13 }}>{p.category}</td>
                 <td style={{ padding: '14px 16px' }}>NT$ {p.price.toLocaleString()}</td>
                 <td style={{ padding: '14px 16px' }}>{p.stock}</td>

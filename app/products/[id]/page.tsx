@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import ProductImage from '@/components/ProductImage';
 
 export default async function ProductDetailPage({
   params,
@@ -13,7 +14,7 @@ export default async function ProductDetailPage({
   return (
     <main className="container section" style={{ maxWidth: 800 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'start' }}>
-        <div style={{ aspectRatio: '1 / 1', background: '#f1f1f1', borderRadius: 18 }} />
+        <ProductImage src={product.imageUrl} alt={product.name} />
 
         <div>
           <span style={{ fontSize: 12, color: '#ec4899', fontWeight: 700 }}>

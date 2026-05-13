@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import ProductImage from '@/components/ProductImage';
 
 const categories = ['全部', '居家生活', '3C 電子', '服飾鞋包', '美妝保養', '母嬰玩具', '食品飲料'];
 
@@ -55,7 +56,7 @@ export default async function ProductsPage({
           {products.map((p) => (
             <Link key={p.id} href={`/products/${p.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{ background: '#fff', borderRadius: 18, border: '1px solid #e5e5e5', overflow: 'hidden' }}>
-                <div style={{ aspectRatio: '1 / 1', background: '#f1f1f1' }} />
+                <ProductImage src={p.imageUrl} alt={p.name} />
                 <div style={{ padding: 18 }}>
                   {p.tag && <span style={{ fontSize: 12, color: '#ec4899', fontWeight: 700 }}>{p.tag}</span>}
                   <h3 style={{ margin: '8px 0 6px', fontSize: 15, color: '#111' }}>{p.name}</h3>
