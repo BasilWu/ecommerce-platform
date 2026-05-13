@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function AddToCartButton({
@@ -8,57 +7,56 @@ export default function AddToCartButton({
   disabled,
 }: {
   productId: string;
-  disabled: boolean;
+  disabled?: boolean;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const addToCart = async () => {
+  const handleAddToCart = async () => {
+    if (disabled) return;
+
     setLoading(true);
+    setError('');
 
-    const res = await fetch('/api/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, quantity: 1 }),
-    });
+    try {
+      const res = await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, quantity: 1 }),
+      });
 
-    setLoading(false);
-
-    if (res.status === 401) {
-      alert('請先登入會員');
-      router.push('/login');
-      return;
-    }
-
-    if (!res.ok) {
       const data = await res.json().catch(() => null);
-      alert(data?.message || '加入購物車失敗');
-      return;
-    }
 
-    alert('已加入購物車');
-    router.push('/cart');
-    router.refresh();
+      if (!res.ok) {
+        setError(data?.message || '加入購物車失敗');
+        setLoading(false);
+        return;
+      }
+
+      window.dispatchEvent(new Event('mini-cart:refresh'));
+      window.dispatchEvent(new Event('mini-cart:open'));
+      setLoading(false);
+    } catch {
+      setError('加入購物車失敗');
+      setLoading(false);
+    }
   };
 
   return (
-    <button
-      type="button"
-      onClick={addToCart}
-      disabled={disabled || loading}
-      style={{
-        width: '100%',
-        padding: '14px',
-        borderRadius: 999,
-        background: disabled ? '#ccc' : '#ec4899',
-        color: '#fff',
-        border: 'none',
-        fontWeight: 700,
-        fontSize: 16,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-      }}
-    >
-      {disabled ? '已售完' : loading ? '加入中...' : '加入購物車'}
-    </button>
+    <div>
+      <button
+        type="button"
+        className="btn"
+        style={{ width: '100%', height: 52 }}
+        onClick={handleAddToCart}
+        disabled={disabled || loading}
+      >
+        {disabled ? '已售完' : loading ? '加入中...' : '加入購物車'}
+      </button>
+
+      {error ? (
+        <p style={{ color: '#c85b6b', marginTop: 12, marginBottom: 0 }}>{error}</p>
+      ) : null}
+    </div>
   );
 }
