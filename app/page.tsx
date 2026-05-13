@@ -10,15 +10,6 @@ const categories = [
   { title: '食品飲料', desc: '零食、咖啡、飲品', color: '#06b6d4' },
 ];
 
-const products = [
-  { name: '無線藍牙耳機', price: 'NT$ 1,280', tag: '熱銷' },
-  { name: '真空保溫杯', price: 'NT$ 690', tag: '新品' },
-  { name: '機械鍵盤', price: 'NT$ 2,980', tag: '限時優惠' },
-  { name: '電動牙刷', price: 'NT$ 999', tag: '推薦' },
-  { name: '香氛精油組', price: 'NT$ 880', tag: '母親節' },
-  { name: '運動休閒鞋', price: 'NT$ 1,590', tag: '熱銷' },
-];
-
 export default function HomePage() {
   return (
     <main style={{ background: '#f6f6f6', color: '#111' }}>
@@ -113,18 +104,16 @@ export default function HomePage() {
             marginTop: 16,
           }}
         >
-          {products.map((item) => (
-            <div key={item.name} style={{ background: '#fff', borderRadius: 18, border: '1px solid #e5e5e5', overflow: 'hidden' }}>
-              <div style={{ aspectRatio: '1 / 1', background: '#f1f1f1' }} />
-              <div style={{ padding: 18 }}>
-                <span style={{ fontSize: 12, color: '#ec4899', fontWeight: 700 }}>{item.tag}</span>
-                <h3 style={{ margin: '10px 0 8px', color: '#111' }}>{item.name}</h3>
-                <p style={{ margin: 0, color: '#111', fontWeight: 700 }}>{item.price}</p>
+          {[1, 2, 3].map((i) => (
+            <div key={i} style={{ background: '#fff', borderRadius: 18, padding: 16, border: '1px solid #e5e5e5' }}>
+              <div style={{ width: '100%', height: 160, background: '#f6f6f6', borderRadius: 12, marginBottom: 12 }} />
+              <strong style={{ display: 'block', marginBottom: 6 }}>商品名稱 {i}</strong>
+              <span style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>商品簡短描述，介紹商品特色與賣點。</span>
+              <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 16, fontWeight: 'bold', color: '#ef4444' }}>$1999</span>
                 <button
                   style={{
-                    marginTop: 14,
-                    width: '100%',
-                    padding: '12px 14px',
+                    padding: '8px 12px',
                     borderRadius: 999,
                     background: '#ec4899',
                     color: '#fff',

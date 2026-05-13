@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import ProductImage from '@/components/ProductImage';
+import AddToCartButton from './AddToCartButton';
 
 export default async function ProductDetailPage({
   params,
@@ -28,23 +29,7 @@ export default async function ProductDetailPage({
           <p style={{ fontSize: 13, color: '#999', marginBottom: 24 }}>
             庫存：{product.stock > 0 ? `${product.stock} 件` : '已售完'}
           </p>
-
-          <button
-            disabled={product.stock === 0}
-            style={{
-              width: '100%',
-              padding: '14px',
-              borderRadius: 999,
-              background: product.stock > 0 ? '#ec4899' : '#ccc',
-              color: '#fff',
-              border: 'none',
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: product.stock > 0 ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {product.stock > 0 ? '加入購物車' : '已售完'}
-          </button>
+          <AddToCartButton productId={product.id} disabled={product.stock === 0} />
         </div>
       </div>
     </main>
