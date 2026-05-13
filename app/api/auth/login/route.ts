@@ -18,12 +18,19 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 401 }
+      );
     }
 
     const valid = await bcrypt.compare(data.password, user.passwordHash);
+
     if (!valid) {
-      return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Invalid password' },
+        { status: 401 }
+      );
     }
 
     const token = jwt.sign(
@@ -57,6 +64,9 @@ export async function POST(req: Request) {
 
     return res;
   } catch {
-    return NextResponse.json({ message: 'Invalid request' }, { status: 400 });
+    return NextResponse.json(
+      { message: 'Invalid request' },
+      { status: 400 }
+    );
   }
 }

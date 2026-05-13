@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import CartBadge from './CartBadge';
+import AuthStatus from './AuthStatus';
 
 export default function Navbar() {
   const categories = ['居家生活', '3C 電子', '服飾鞋包', '美妝保養', '母嬰玩具', '食品飲料'];
@@ -18,10 +20,8 @@ export default function Navbar() {
           </form>
 
           <div className="header-actions">
-            <Link href="/member">會員中心</Link>
-            <Link href="/orders">訂單</Link>
-            <Link href="/cart">購物車</Link>
-            <Link href="/login">登入</Link>
+            <AuthStatus />
+            <CartBadge />
           </div>
         </div>
 

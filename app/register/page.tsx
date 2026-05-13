@@ -1,81 +1,108 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const update = (key: 'name' | 'email' | 'password', value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setError('');
 
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify(form),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
+
     setLoading(false);
 
     if (!res.ok) {
-      setMessage(data.message || '註冊失敗');
+      setError(data?.message || '註冊失敗');
       return;
     }
 
     router.push('/login');
+    router.refresh();
   };
 
   return (
-    <main className="container section" style={{ maxWidth: 560 }}>
-      <h1>註冊</h1>
-      <p className="muted">建立會員帳號，之後可登入查看訂單與會員資料。</p>
+    <main className="container section" style={{ maxWidth: 520 }}>
+      <div className="page-header">
+        <h1>建立帳號</h1>
+        <p>只需要基本資料就能快速開始購物。</p>
+      </div>
 
-      <form className="card" style={{ padding: 24, marginTop: 20 }} onSubmit={submit}>
-        <Field label="姓名" placeholder="請輸入姓名" value={name} onChange={setName} />
-        <Field label="Email" placeholder="name@example.com" value={email} onChange={setEmail} />
-        <Field label="密碼" placeholder="請輸入密碼" type="password" value={password} onChange={setPassword} />
+      <form className="form-shell" onSubmit={submit}>
+        <div className="field">
+          <label htmlFor="name">姓名</label>
+          <input
+            id="name"
+            type="text"
+            placeholder="請輸入姓名"
+            value={form.name}
+            onChange={(e) => update('name', e.target.value)}
+          />
+        </div>
 
-        {message ? <p style={{ color: '#fca5a5', marginTop: 12 }}>{message}</p> : null}
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={(e) => update('email', e.target.value)}
+          />
+        </div>
 
-        <button type="submit" className="btn" style={{ marginTop: 20, width: '100%' }} disabled={loading}>
-          {loading ? '註冊中...' : '建立帳號'}
+        <div className="field">
+          <label htmlFor="password">密碼</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="至少 6 碼"
+            value={form.password}
+            onChange={(e) => update('password', e.target.value)}
+          />
+        </div>
+
+        {error ? (
+          <p style={{ color: '#c85b6b', marginTop: 14, marginBottom: 0 }}>{error}</p>
+        ) : null}
+
+        <button
+          type="submit"
+          className="btn"
+          style={{ width: '100%', marginTop: 20, height: 50 }}
+          disabled={loading}
+        >
+          {loading ? '建立中...' : '建立帳號'}
         </button>
+
+        <p className="muted" style={{ marginTop: 18, marginBottom: 0, fontSize: 14 }}>
+          已經有帳號？{' '}
+          <Link href="/login" style={{ color: '#b76aa3', fontWeight: 700 }}>
+            前往登入
+          </Link>
+        </p>
       </form>
     </main>
-  );
-}
-
-function Field({
-  label,
-  placeholder,
-  type = 'text',
-  value,
-  onChange,
-}: {
-  label: string;
-  placeholder: string;
-  type?: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label style={{ display: 'block', marginTop: 16 }}>
-      <span className="muted">{label}</span>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        style={{ width: '100%', marginTop: 8, padding: 12, borderRadius: 12, background: '#111', color: '#fff', border: '1px solid #262626' }}
-      />
-    </label>
   );
 }
